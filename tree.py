@@ -43,7 +43,7 @@ class MerkleSumTree:
                     b1 = buckets.pop(0)
                     b2 = buckets.pop(0)
                     size = b1.size + b2.size
-                    data = H(encode(b1.size) + b1.data) + H(encode(b2.size) + b2.data)
+                    data = H(encode(b1.size - 1) + b1.data) + H(encode(b2.size - 1) + b2.data)
                     b = Bucket(size, data)
                     b1.parent = b2.parent = b
                     b1.right = b2
@@ -79,9 +79,9 @@ class MerkleSumTree:
         curr = bucket
         for step in proof:
             if step.right:
-                data = H(encode(curr.size) + curr.data) + H(encode(step.bucket.size) + step.bucket.data)
+                data = H(encode(curr.size - 1) + curr.data) + H(encode(step.bucket.size - 1) + step.bucket.data)
             else:
-                data = H(encode(step.bucket.size) + step.bucket.data) + H(encode(curr.size) + curr.data)
+                data = H(encode(step.bucket.size - 1) + step.bucket.data) + H(encode(curr.size - 1) + curr.data)
             curr = Bucket(curr.size + step.bucket.size, data)
         return curr.size == root.size and curr.data == root.data
 
