@@ -93,8 +93,8 @@ if __name__ == '__main__':
                 Bucket(5, b""), # (10, 15)
                 Bucket(5, b"tx2"), # (15, 20)
                 Bucket(50, b"tx3"), # (20, 70)
-                Bucket(20, b""), # (70, 90)
-                Bucket(10, b"tx4")] # (90, 100)
+                Bucket(20, b"tx4"), # (70, 90)
+                Bucket(TREE_SIZE - 90, b"")] # (90, TREE_SIZE)
 
     tree = MerkleSumTree(buckets)
 
