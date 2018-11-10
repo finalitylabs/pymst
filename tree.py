@@ -15,7 +15,7 @@ def decode(bts):
     """Decodes bytes to uint64"""
     return struct.unpack(">Q", bts)[0]
 
-TREE_SIZE = 100 # 2 ** 128
+TREE_SIZE = 2 ** 64
 
 class Bucket:
     def __init__(self, size, data):
