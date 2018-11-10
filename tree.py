@@ -64,7 +64,14 @@ class MerkleSumTree:
             proof.append(ProofStep(bucket, right))
         return proof
 
-    def verify_proof(root, bucket, proof):
+    def validate_steps(steps, size, range):
+        curr = (sum([s.bucket.size for s in steps if not s.right]),
+                size - sum([s.bucket.size for s in steps if s.right]))
+        return curr == range
+
+    def verify_proof(root, bucket, range, proof):
+        if not MerkleSumTree.validate_steps(proof, root.size, range):
+            return False
         curr = bucket
         for step in proof:
             if step.right:
@@ -76,18 +83,19 @@ class MerkleSumTree:
 
 
 if __name__ == '__main__':
-    
-    buckets = [Bucket(4, b""),
-                Bucket(6, b"tx1"),
-                Bucket(5, b""),
-                Bucket(5, b"tx2"),
-                Bucket(50, b"tx3"),
-                Bucket(20, b""),
-                Bucket(10, b"tx4")]
+
+    buckets = [Bucket(4, b""), # (0, 4)
+                Bucket(6, b"tx1"), # (4, 10)
+                Bucket(5, b""), # (10, 15)
+                Bucket(5, b"tx2"), # (15, 20)
+                Bucket(50, b"tx3"), # (20, 70)
+                Bucket(20, b""), # (70, 90)
+                Bucket(10, b"tx4")] # (90, 100)
 
     tree = MerkleSumTree(buckets)
 
     root = tree.get_root()
     bucket = tree.buckets[3]
+    rng = (15, 20) # Desired range for bucket 3
     proof = tree.get_proof(3)
-    print(MerkleSumTree.verify_proof(root, bucket, proof))
+    print(MerkleSumTree.verify_proof(root, bucket, rng, proof))
