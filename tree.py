@@ -3,15 +3,16 @@
 import hashlib
 import struct
 
-# Hash function (Currently SHA256)
 def H(data):
+    """Hash function (Currently SHA256)"""
     return hashlib.sha256(data).digest()
 
-# Encode a uint64 to bytes
 def encode(num):
+    """Encodes uint64 to bytes"""
     return struct.pack(">Q", num)
 
 def decode(bts):
+    """Decodes bytes to uint64"""
     return struct.unpack(">Q", bts)[0]
 
 TREE_SIZE = 100 # 2 ** 128
@@ -20,6 +21,7 @@ class Bucket:
     def __init__(self, size, data):
         self.size = size
         self.data = data
+        # Each node in the tree can have a parent, and a left or right neighbor.
         self.parent = None
         self.left = None
         self.right = None
@@ -27,11 +29,12 @@ class Bucket:
 class ProofStep:
     def __init__(self, bucket, right):
         self.bucket = bucket
-        self.right = right
+        self.right = right# Whether the data should be appended on the right side in this step (Default is left)
 
 class MerkleSumTree:
 
     def __init__(self, buckets):
+        """Initializes the Merkle-Sum-Tree"""
         self.buckets = list(buckets)
         while len(buckets) != 1:
             new_buckets = []
@@ -55,6 +58,7 @@ class MerkleSumTree:
         return self.root
 
     def get_proof(self, index):
+        """Gets inclusion/exclusion proof of a bucket in the specified index"""
         curr = self.buckets[index]
         proof = []
         while curr.parent:
@@ -64,13 +68,13 @@ class MerkleSumTree:
             proof.append(ProofStep(bucket, right))
         return proof
 
-    def validate_steps(steps, size, range):
-        curr = (sum([s.bucket.size for s in steps if not s.right]),
-                size - sum([s.bucket.size for s in steps if s.right]))
-        return curr == range
-
     def verify_proof(root, bucket, range, proof):
-        if not MerkleSumTree.validate_steps(proof, root.size, range):
+        """Validates the supplied `proof` for a specific `bucket` in a desired
+        `range` by the `root` bucket of the Merkle-Sum-Tree."""
+        rng = (sum([s.bucket.size for s in proof if not s.right]),
+                root.size - sum([s.bucket.size for s in proof if s.right]))
+        if rng != range:
+            # Supplied steps are not routing us to the range specified.
             return False
         curr = bucket
         for step in proof:
