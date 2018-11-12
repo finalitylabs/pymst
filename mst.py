@@ -40,6 +40,9 @@ class MerkleSumTree:
 
     def __init__(self, leaves):
         """Initializes the Merkle-Sum-Tree"""
+
+        MerkleSumTree._check_consecutive(leaves)
+
         self.leaves = leaves
         self.buckets = [l.get_bucket() for l in leaves]
         buckets = list(self.buckets)
@@ -60,6 +63,13 @@ class MerkleSumTree:
                     new_buckets.append(buckets.pop(0))
             buckets = new_buckets
         self.root = buckets[0]
+
+    def _check_consecutive(leaves):
+        curr = 0
+        for leaf in leaves:
+            if leaf.rng[0] != curr:
+                raise Exception("Leaf ranges are invalid!")
+            curr = leaf.rng[1]
 
     def get_root(self):
         return self.root
