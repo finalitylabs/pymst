@@ -52,7 +52,7 @@ class MerkleSumTree:
                     b1 = buckets.pop(0)
                     b2 = buckets.pop(0)
                     size = b1.size + b2.size
-                    hashed = H(encode(b1.size) + b1.hashed) + H(encode(b2.size) + b2.hashed)
+                    hashed = H(encode(b1.size) + b1.hashed + encode(b2.size) + b2.hashed)
                     b = Bucket(size, hashed)
                     b1.parent = b2.parent = b
                     b1.right = b2
@@ -95,8 +95,8 @@ class MerkleSumTree:
         curr = leaf.get_bucket()
         for step in proof:
             if step.right:
-                hashed = H(encode(curr.size) + curr.hashed) + H(encode(step.bucket.size) + step.bucket.hashed)
+                hashed = H(encode(curr.size) + curr.hashed + encode(step.bucket.size) + step.bucket.hashed)
             else:
-                hashed = H(encode(step.bucket.size) + step.bucket.hashed) + H(encode(curr.size) + curr.hashed)
+                hashed = H(encode(step.bucket.size) + step.bucket.hashed + encode(curr.size) + curr.hashed)
             curr = Bucket(curr.size + step.bucket.size, hashed)
         return curr.size == root.size and curr.hashed == root.hashed
