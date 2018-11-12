@@ -18,9 +18,9 @@ def decode(bts):
 TREE_SIZE = 2 ** 64
 
 class Bucket:
-    def __init__(self, size, data):
+    def __init__(self, size, hashed):
         self.size = size
-        self.data = data
+        self.hashed = hashed
         # Each node in the tree can have a parent, and a left or right neighbor.
         self.parent = None
         self.left = None
@@ -29,7 +29,7 @@ class Bucket:
 class ProofStep:
     def __init__(self, bucket, right):
         self.bucket = bucket
-        self.right = right# Whether the data should be appended on the right side in this step (Default is left)
+        self.right = right# Whether the bucket hash should be appended on the right side in this step (Default is left)
 
 class MerkleSumTree:
 
@@ -43,8 +43,8 @@ class MerkleSumTree:
                     b1 = buckets.pop(0)
                     b2 = buckets.pop(0)
                     size = b1.size + b2.size
-                    data = H(encode(b1.size) + b1.data) + H(encode(b2.size) + b2.data)
-                    b = Bucket(size, data)
+                    hashed = H(encode(b1.size) + b1.hashed) + H(encode(b2.size) + b2.hashed)
+                    b = Bucket(size, hashed)
                     b1.parent = b2.parent = b
                     b1.right = b2
                     b2.left = b1
@@ -79,11 +79,11 @@ class MerkleSumTree:
         curr = bucket
         for step in proof:
             if step.right:
-                data = H(encode(curr.size) + curr.data) + H(encode(step.bucket.size) + step.bucket.data)
+                hashed = H(encode(curr.size) + curr.hashed) + H(encode(step.bucket.size) + step.bucket.hashed)
             else:
-                data = H(encode(step.bucket.size) + step.bucket.data) + H(encode(curr.size) + curr.data)
-            curr = Bucket(curr.size + step.bucket.size, data)
-        return curr.size == root.size and curr.data == root.data
+                hashed = H(encode(step.bucket.size) + step.bucket.hashed) + H(encode(curr.size) + curr.hashed)
+            curr = Bucket(curr.size + step.bucket.size, hashed)
+        return curr.size == root.size and curr.hashed == root.hashed
 
 
 if __name__ == '__main__':
