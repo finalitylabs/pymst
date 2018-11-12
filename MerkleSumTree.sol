@@ -17,6 +17,8 @@ library MerkleSumTree {
     // Current bucket
     uint64 currSize = leafEnd - leafStart;
     bytes32 currHash = leafHash;
+    uint64 currStart = 0;
+    uint64 currEnd = rootSize;
 
     uint8 bucketLeftOrRight;
     uint64 bucketSize;
@@ -33,15 +35,20 @@ library MerkleSumTree {
         bucketHash = readBytes32(proof, stepPos + 9);
 
         currSize = currSize + bucketSize;
-        if(bucketLeftOrRight == 0)
+        if(bucketLeftOrRight == 0) {
+          currStart += bucketSize;
           currHash = sha3(abi.encodePacked(bucketSize, bucketHash, currSize, currHash));
-        else
+        }
+        else {
+          currEnd -= bucketSize;
           currHash = sha3(abi.encodePacked(currSize, currHash, bucketSize, bucketHash));
+        }
 
         stepPos += 41;
     }
 
-    return currHash == rootHash && currSize == rootSize;
+    return currHash == rootHash && currSize == rootSize &&
+            currStart == leafStart && currEnd == leafEnd;
   }
 
 }
