@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from mst import MerkleSumTree, Leaf
+from pymst import MerkleSumTree, Leaf
 
 if __name__ == '__main__':
 
