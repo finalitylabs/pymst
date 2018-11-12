@@ -43,7 +43,6 @@ class MerkleSumTree:
 
         MerkleSumTree._check_consecutive(leaves)
 
-        self.leaves = leaves
         self.buckets = [l.get_bucket() for l in leaves]
         buckets = list(self.buckets)
         while len(buckets) != 1:

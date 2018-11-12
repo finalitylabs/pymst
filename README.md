@@ -22,7 +22,7 @@ tree = MerkleSumTree(leaves)
 root = tree.get_root()
 proof = tree.get_proof(3)
 
-if MerkleSumTree.verify_proof(root, tree.leaves[3], proof):
+if MerkleSumTree.verify_proof(root, leaves[3], proof):
   print("Proof is valid!")
 else:
   print("Proof is not valid!")
