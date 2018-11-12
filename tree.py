@@ -26,6 +26,15 @@ class Bucket:
         self.left = None
         self.right = None
 
+class Leaf:
+    def __init__(self, rng, data):
+        self.rng = rng
+        self.data = data
+
+    def get_bucket(self):
+        hashed = H(self.data) if self.data else b'\x00' * 32
+        return Bucket(self.rng[1] - self.rng[0], hashed)
+
 class ProofStep:
     def __init__(self, bucket, right):
         self.bucket = bucket
@@ -33,9 +42,11 @@ class ProofStep:
 
 class MerkleSumTree:
 
-    def __init__(self, buckets):
+    def __init__(self, leaves):
         """Initializes the Merkle-Sum-Tree"""
-        self.buckets = list(buckets)
+        self.leaves = leaves
+        self.buckets = [l.get_bucket() for l in leaves]
+        buckets = list(self.buckets)
         while len(buckets) != 1:
             new_buckets = []
             while buckets:
@@ -68,15 +79,15 @@ class MerkleSumTree:
             proof.append(ProofStep(bucket, right))
         return proof
 
-    def verify_proof(root, bucket, range, proof):
+    def verify_proof(root, leaf, proof):
         """Validates the supplied `proof` for a specific `bucket` in a desired
         `range` by the `root` bucket of the Merkle-Sum-Tree."""
         rng = (sum([s.bucket.size for s in proof if not s.right]),
                 root.size - sum([s.bucket.size for s in proof if s.right]))
-        if rng != range:
+        if rng != leaf.rng:
             # Supplied steps are not routing us to the range specified.
             return False
-        curr = bucket
+        curr = leaf.get_bucket()
         for step in proof:
             if step.right:
                 hashed = H(encode(curr.size) + curr.hashed) + H(encode(step.bucket.size) + step.bucket.hashed)
@@ -88,18 +99,17 @@ class MerkleSumTree:
 
 if __name__ == '__main__':
 
-    buckets = [Bucket(4, b""), # (0, 4)
-                Bucket(6, b"tx1"), # (4, 10)
-                Bucket(5, b""), # (10, 15)
-                Bucket(5, b"tx2"), # (15, 20)
-                Bucket(50, b"tx3"), # (20, 70)
-                Bucket(20, b"tx4"), # (70, 90)
-                Bucket(TREE_SIZE - 90, b"")] # (90, TREE_SIZE)
+    leaves = [Leaf((0, 4), None),
+                Leaf((4, 10), b"tx1"),
+                Leaf((10, 15), None),
+                Leaf((15, 20), b"tx2"),
+                Leaf((20, 70), b"tx3"),
+                Leaf((70, 90), b"tx4"),
+                Leaf((90, TREE_SIZE), None)]
 
-    tree = MerkleSumTree(buckets)
+    tree = MerkleSumTree(leaves)
 
     root = tree.get_root()
-    bucket = tree.buckets[3]
-    rng = (15, 20) # Desired range for bucket 3
+    leaf = tree.leaves[3]
     proof = tree.get_proof(3)
-    print(MerkleSumTree.verify_proof(root, bucket, rng, proof))
+    print(MerkleSumTree.verify_proof(root, leaf, proof))
