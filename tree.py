@@ -80,8 +80,8 @@ class MerkleSumTree:
         return proof
 
     def verify_proof(root, leaf, proof):
-        """Validates the supplied `proof` for a specific `bucket` in a desired
-        `range` by the `root` bucket of the Merkle-Sum-Tree."""
+        """Validates the supplied `proof` for a specific `leaf` according to the
+        `root` bucket of Merkle-Sum-Tree."""
         rng = (sum([s.bucket.size for s in proof if not s.right]),
                 root.size - sum([s.bucket.size for s in proof if s.right]))
         if rng != leaf.rng:
