@@ -27,3 +27,25 @@ if MerkleSumTree.verify_proof(root, tree.leaves[3], proof):
 else:
   print("Proof is not valid!")
 ```
+
+## Integration with Solidity
+
+Binary representation of proofs:
+
+| Bytes  | Data                   |
+|:------:|:----------------------:|
+| 0-8    | Number of steps        |
+| 8-9    | Step #1: Right or Left |
+| 9-17   | Step #1: Bucket size   |
+| 17-49  | Step #1: Bucket hash   |
+| 49-50  | Step #2: Right or Left |
+| 50-58  | Step #2: Bucket size   |
+| 58-90  | Step #2: Bucket hash   |
+| ...    | ...                    |
+
+Notes:
+- Number of steps is represented as a 8-byte big-endian unsigned integer.
+- Each step is 41 bytes long.
+- Bucket size is also a 8-byte big-endian unsigned integer.
+- Bucket hash is a 32-byte hash.
+- Left = `0x00` & Right = `0x01`.
