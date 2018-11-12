@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import hashlib
 import struct
 
@@ -14,8 +12,6 @@ def encode(num):
 def decode(bts):
     """Decodes bytes to uint64"""
     return struct.unpack(">Q", bts)[0]
-
-TREE_SIZE = 2 ** 64
 
 class Bucket:
     def __init__(self, size, hashed):
@@ -95,21 +91,3 @@ class MerkleSumTree:
                 hashed = H(encode(step.bucket.size) + step.bucket.hashed) + H(encode(curr.size) + curr.hashed)
             curr = Bucket(curr.size + step.bucket.size, hashed)
         return curr.size == root.size and curr.hashed == root.hashed
-
-
-if __name__ == '__main__':
-
-    leaves = [Leaf((0, 4), None), # None means the leaf is empty.
-                Leaf((4, 10), b"tx1"),
-                Leaf((10, 15), None),
-                Leaf((15, 20), b"tx2"),
-                Leaf((20, 70), b"tx3"),
-                Leaf((70, 90), b"tx4"),
-                Leaf((90, TREE_SIZE), None)]
-
-    tree = MerkleSumTree(leaves)
-
-    root = tree.get_root()
-    leaf = tree.leaves[3]
-    proof = tree.get_proof(3)
-    print(MerkleSumTree.verify_proof(root, leaf, proof))
