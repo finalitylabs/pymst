@@ -99,7 +99,7 @@ class MerkleSumTree:
 
 if __name__ == '__main__':
 
-    leaves = [Leaf((0, 4), None),
+    leaves = [Leaf((0, 4), None), # None means the leaf is empty.
                 Leaf((4, 10), b"tx1"),
                 Leaf((10, 15), None),
                 Leaf((15, 20), b"tx2"),
