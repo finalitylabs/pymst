@@ -37,11 +37,11 @@ library MerkleSumTree {
         currSize = currSize + bucketSize;
         if(bucketLeftOrRight == 0) {
           currStart += bucketSize;
-          currHash = sha3(abi.encodePacked(bucketSize, bucketHash, currSize, currHash));
+          currHash = keccak256(abi.encodePacked(bucketSize, bucketHash, currSize, currHash));
         }
         else {
           currEnd -= bucketSize;
-          currHash = sha3(abi.encodePacked(currSize, currHash, bucketSize, bucketHash));
+          currHash = keccak256(abi.encodePacked(currSize, currHash, bucketSize, bucketHash));
         }
 
         stepPos += 41;
