@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-library MerkleSumTree {
+contract MerkleSumTree {
 
   function readUint64(bytes data, uint256 offset) private pure returns (uint64) {
     offset += 32;
@@ -51,7 +51,7 @@ library MerkleSumTree {
         bucketSize = readUint64(proof, stepPos + 1);
         bucketHash = readBytes32(proof, stepPos + 9);
 
-        currSize = currSize + bucketSize;
+
         if(bucketLeftOrRight == 0) {
           currStart += bucketSize;
           currHash = keccak256(abi.encodePacked(bucketSize, bucketHash, currSize, currHash));
@@ -60,6 +60,7 @@ library MerkleSumTree {
           currEnd -= bucketSize;
           currHash = keccak256(abi.encodePacked(currSize, currHash, bucketSize, bucketHash));
         }
+        currSize = currSize + bucketSize;
 
         stepPos += 41;
     }
