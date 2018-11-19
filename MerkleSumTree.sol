@@ -23,6 +23,14 @@ contract MerkleSumTree {
     return result;
   }
 
+  // Test case:
+  // proof: 0x000000000000000005efbde2c3aee204a69b7696d4b10ff31137fe78e3946306284f806e2dfc68b80500000000000000000adc1f2cbadf3cf42e13fed7a5bc239fe828329bb0dd8ef456bed7ab94dec6c5980100000000000000b49d7cdd4e64c94f59c5d4c7db419624f7f097c889a5cbdc59980a7fb83733fac7
+  // rootHash: 0x822d8b8f2bce6889851a8b3862e66ec578b8cf32439e16f26fd66617179008da
+  // rootSize: 200
+  // leafHash: 0x183a7d361ca1625fa85289cbdf578effaa4376f038587b9ab574e3fe80e5edc5
+  // leafStart: 15
+  // leafEnd: 20
+
   function verify(
     bytes proof,
     bytes32 rootHash, uint64 rootSize,
