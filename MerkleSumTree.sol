@@ -3,18 +3,21 @@ pragma solidity ^0.4.24;
 library MerkleSumTree {
 
   function readUint64(bytes data, uint256 offset) private pure returns (uint64) {
+    offset += 32;
     uint64 result;
     assembly {result := div(mload(add(data, offset)), exp(256, 24))}
     return result;
   }
 
   function readUint8(bytes data, uint256 offset) private pure returns (uint8) {
+    offset += 32;
     uint8 result;
     assembly {result := div(mload(add(data, offset)), exp(256, 31))}
     return result;
   }
 
   function readBytes32(bytes data, uint256 offset) private pure returns (bytes32) {
+    offset += 32;
     bytes32 result;
     assembly {result := mload(add(data, offset))}
     return result;
