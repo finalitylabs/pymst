@@ -34,18 +34,17 @@ Binary representation of proofs:
 
 | Bytes  | Data                   |
 |:------:|:----------------------:|
-| 0-8    | Number of steps        |
-| 8-9    | Step #1: Right or Left |
-| 9-17   | Step #1: Bucket size   |
-| 17-49  | Step #1: Bucket hash   |
-| 49-50  | Step #2: Right or Left |
-| 50-58  | Step #2: Bucket size   |
-| 58-90  | Step #2: Bucket hash   |
+| 0-1    | Step #1: Right or Left |
+| 1-9    | Step #1: Bucket size   |
+| 9-41   | Step #1: Bucket hash   |
+| 41-42  | Step #2: Right or Left |
+| 42-50  | Step #2: Bucket size   |
+| 50-82  | Step #2: Bucket hash   |
 | ...    | ...                    |
 
 Notes:
-- Number of steps is represented as a 8-byte big-endian unsigned integer.
 - Each step is 41 bytes long.
-- Bucket size is also a 8-byte big-endian unsigned integer.
+- Number of steps is proof-size % 41.
+- Bucket size is a 8-byte big-endian unsigned integer.
 - Bucket hash is a 32-byte hash.
 - Left = `0x00` & Right = `0x01`.

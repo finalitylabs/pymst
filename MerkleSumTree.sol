@@ -2,17 +2,34 @@ pragma solidity ^0.4.24;
 
 library MerkleSumTree {
 
+  function readUint64(bytes data, uint256 offset) private pure returns (uint64) {
+    uint64 result;
+    assembly {result := div(mload(add(data, offset)), exp(256, 24))}
+    return result;
+  }
+
+  function readUint8(bytes data, uint256 offset) private pure returns (uint8) {
+    uint8 result;
+    assembly {result := div(mload(add(data, offset)), exp(256, 31))}
+    return result;
+  }
+
+  function readBytes32(bytes data, uint256 offset) private pure returns (bytes32) {
+    bytes32 result;
+    assembly {result := mload(add(data, offset))}
+    return result;
+  }
+
   function verify(
     bytes proof,
-    bytes32 rootHash, uint64 rootSize, // Root bucket
-    bytes32 leafHash, uint64 leafStart, uint64 leafEnd // Leaf bucket
+    bytes32 rootHash, uint64 rootSize,
+    bytes32 leafHash, uint64 leafStart, uint64 leafEnd
   )
-    internal
+    public
     pure
     returns (bool)
   {
-    // Each step is 41 bytes long. First 8 bytes represents number of steps.
-    require((proof.length - 8) % 41 == 0, "Invalid proof.");
+    require(proof.length % 41 == 0, "Invalid proof.");
 
     // Current bucket
     uint64 currSize = leafEnd - leafStart;
@@ -23,12 +40,9 @@ library MerkleSumTree {
     uint8 bucketLeftOrRight;
     uint64 bucketSize;
     bytes32 bucketHash;
+    uint stepPos = 0;
 
-    uint64 stepsCount = readUint64(proof, 0);
-    uint16 stepPos = 8;
-
-    for(uint i = 0; i < stepsCount; i++) {
-        require(proof.length >= stepPos + 41, "Invalid proof.");
+    while(stepPos < proof.length) {
 
         bucketLeftOrRight = readUint8(proof, stepPos);
         bucketSize = readUint64(proof, stepPos + 1);
